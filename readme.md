@@ -28,3 +28,6 @@ for output_neuron in network.output_neurons:
  
 ## First Experiment
 After making the basics of the network class I would try it to make a small 2d car drive on its own in a little circuit.
+
+## Potential Expansions 
+Add posible mutations to the number of neurons
