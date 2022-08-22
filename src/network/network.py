@@ -2,7 +2,7 @@ import numpy as np
 import math
 
 class Network:
-    def __init__(self, num_inputs, num_outputs, num_network_neurons, connection_type: str = 'ensure_output', symetric_neuron_connections: bool = True, connection_probability: float = 0.6):
+    def __init__(self, num_inputs, num_outputs, num_network_neurons, connection_type: str = 'ensure_connection', symetric_neuron_connections: bool = True, connection_probability: float = 0.6):
         self.num_inputs = num_inputs
         self.num_outputs = num_outputs
         self.num_network_neurons = num_network_neurons
@@ -66,10 +66,60 @@ class Network:
 
     def mutate(self,
     default_mutation_prob: float = 0.1,
+    default_mutation_amount: float = 0.1,
     threshold_mutation_prob: None | float = None,
     weight_mutation_prob: None | float = None,
-    bias_mutation_prob: None | float = None,
-    connection_mutation_prob: None | float = None,
+    bias_mutation_prob : None | float = None,
+    connection_creation_mutation_prob: None | float = None,
+    connection_removal_mutation_prob: None | float = None,
+    threshold_mutation_amount: None | float = None,
+    weight_mutation_amount: None | float = None,
+    bias_mutation_amount: None | float = None,
     ):
-        ...
+        # Check for defaults
+        if threshold_mutation_prob is None:
+            threshold_mutation_prob = default_mutation_prob
+        if weight_mutation_prob is None:
+            weight_mutation_prob = default_mutation_prob
+        if bias_mutation_prob is None:
+            bias_mutation_prob = default_mutation_prob
+        if connection_creation_mutation_prob is None:
+            connection_creation_mutation_prob = default_mutation_prob
+        if connection_removal_mutation_prob is None:
+            connection_removal_mutation_prob = default_mutation_prob
+        if threshold_mutation_amount is None:
+            threshold_mutation_amount = default_mutation_amount
+        if weight_mutation_amount is None:
+            weight_mutation_amount = default_mutation_amount
+        if bias_mutation_amount is None:
+            bias_mutation_amount = default_mutation_amount
+
+        # The mutations for the float values will be performed like this:
+        # A neuron is selected for mutation based on the parameter probability of mutation 
+        # and then the mutation amount will follow a normal distribution centered in 0 and 
+        # with a standar deviation equal to the parameter mutation amount
+
+        # Mutate the thresholds
+        rng = np.random.default_rng()
+        mutation_matrix = rng.choice([0,1], self.num_total_neurons, [1-threshold_mutation_prob,threshold_mutation_prob]) 
+        self.neuron_thresholds += mutation_matrix*rng.normal(0,threshold_mutation_amount,self.num_total_neurons)
+        
+        # Mutate the weights
+        mutation_matrix = rng.choice([0,1], (self.num_total_neurons,self.num_total_neurons), [1-weight_mutation_prob,weight_mutation_prob]) 
+        self.connections_weights += mutation_matrix*rng.normal(0,weight_mutation_amount,(self.num_total_neurons,self.num_total_neurons))
+    
+        # Mutate the biases
+        mutation_matrix = rng.choice([0,1], self.num_total_neurons, [1-bias_mutation_prob,bias_mutation_prob]) 
+        self.neurons_biases += mutation_matrix*rng.normal(0,bias_mutation_amount,self.num_total_neurons)
+    
+        # Create new connections
+        mutation_matrix = rng.choice([0,1], (self.num_total_neurons,self.num_total_neurons), [1-connection_creation_mutation_prob,connection_creation_mutation_prob]) 
+        self.neuron_connections -= (self.neuron_connections-1)*mutation_matrix
+
+        # Delete some connections
+        mutation_matrix = rng.choice([0,1], (self.num_total_neurons,self.num_total_neurons), [1-connection_removal_mutation_prob,connection_removal_mutation_prob]) 
+        self.neuron_connections -= self.neuron_connections*mutation_matrix
+ 
+
+
         
