@@ -101,23 +101,23 @@ class Network:
 
         # Mutate the thresholds
         rng = np.random.default_rng()
-        mutation_matrix = rng.choice([0,1], self.num_total_neurons, [1-threshold_mutation_prob,threshold_mutation_prob]) 
+        mutation_matrix = rng.choice([0,1], self.num_total_neurons, p = [1-threshold_mutation_prob,threshold_mutation_prob]) 
         self.neuron_thresholds += mutation_matrix*rng.normal(0,threshold_mutation_amount,self.num_total_neurons)
         
         # Mutate the weights
-        mutation_matrix = rng.choice([0,1], (self.num_total_neurons,self.num_total_neurons), [1-weight_mutation_prob,weight_mutation_prob]) 
+        mutation_matrix = rng.choice([0,1], (self.num_total_neurons,self.num_total_neurons), p = [1-weight_mutation_prob,weight_mutation_prob]) 
         self.connections_weights += mutation_matrix*rng.normal(0,weight_mutation_amount,(self.num_total_neurons,self.num_total_neurons))
     
         # Mutate the biases
-        mutation_matrix = rng.choice([0,1], self.num_total_neurons, [1-bias_mutation_prob,bias_mutation_prob]) 
+        mutation_matrix = rng.choice([0,1], self.num_total_neurons, p = [1-bias_mutation_prob,bias_mutation_prob]) 
         self.neurons_biases += mutation_matrix*rng.normal(0,bias_mutation_amount,self.num_total_neurons)
     
         # Create new connections
-        mutation_matrix = rng.choice([0,1], (self.num_total_neurons,self.num_total_neurons), [1-connection_creation_mutation_prob,connection_creation_mutation_prob]) 
+        mutation_matrix = rng.choice([0,1], (self.num_total_neurons,self.num_total_neurons), p = [1-connection_creation_mutation_prob,connection_creation_mutation_prob]) 
         self.neuron_connections -= (self.neuron_connections-1)*mutation_matrix
 
         # Delete some connections
-        mutation_matrix = rng.choice([0,1], (self.num_total_neurons,self.num_total_neurons), [1-connection_removal_mutation_prob,connection_removal_mutation_prob]) 
+        mutation_matrix = rng.choice([0,1], (self.num_total_neurons,self.num_total_neurons), p = [1-connection_removal_mutation_prob,connection_removal_mutation_prob]) 
         self.neuron_connections -= self.neuron_connections*mutation_matrix
  
 
