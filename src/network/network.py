@@ -42,14 +42,14 @@ class Network:
 
         # Initialize the weights of the connections and the biases of the neurons
         rnd = np.random.default_rng()
-        self.connections_weights = rnd.random((self.num_total_neurons,self.num_total_neurons))
+        self.connections_weights = (rnd.random((self.num_total_neurons,self.num_total_neurons))-0.5)/100
         self.neurons_biases = np.zeros(self.num_total_neurons)
     
         # Initialize the thresholds for neuron activation
-        self.neuron_thresholds = rnd.random(self.num_total_neurons)*10
+        self.neuron_thresholds = rnd.random(self.num_total_neurons)-0.5
     
 
-    def run_step(self,inputs):
+    def run_step(self,inputs) -> np.ndarray:
         if len(inputs) == self.num_inputs:
             self.neuron_values[0:self.num_inputs] = np.array(inputs)
             self.activated_neurons[0:self.num_inputs] = np.ones(self.num_inputs)
