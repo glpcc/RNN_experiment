@@ -120,6 +120,8 @@ class Network:
         mutation_matrix = rng.choice([0,1], (self.num_total_neurons,self.num_total_neurons), p = [1-connection_removal_mutation_prob,connection_removal_mutation_prob]) 
         self.neuron_connections -= self.neuron_connections*mutation_matrix
  
-
+    def clean_values(self):
+        self.neuron_values = np.zeros(self.num_total_neurons)
+        self.activated_neurons = np.zeros(self.num_total_neurons)
 
         

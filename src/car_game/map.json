@@ -2,8 +2,8 @@
     "parametros_coche": {
         "posicion_x": 200,
         "posicion_y": 500,
-        "altura": 80,
-        "anchura": 30,
+        "altura": 40,
+        "anchura": 15,
         "rotacion_inicial": 0,
         "potencia_aceleracion": 0.2,
         "potencia_frenada": 0.1,

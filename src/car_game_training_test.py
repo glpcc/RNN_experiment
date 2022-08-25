@@ -21,7 +21,7 @@ initial_car = Coche(
 )
 
 num_cars = 50
-cars_brains = [Network(num_inputs= 7, num_network_neurons= 50, num_outputs= 2,connection_type='random_connections') for _ in range(num_cars)]
+cars_brains = [Network(num_inputs= 7, num_network_neurons= 50, num_outputs= 2,connection_type='random_connections', connection_probability=0.8) for _ in range(num_cars)]
 cars = [deepcopy(initial_car) for _ in range(num_cars)]
 
 pygame.init()
@@ -31,27 +31,33 @@ canvas = pygame.display.set_mode((XMAX,YMAX))
 done = False
 clock = pygame.time.Clock()
 start_time = timeit.default_timer()
+best_score = -1
+best_net = None
+waiting_time = 10
 while not done:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_DOWN] or timeit.default_timer() - start_time > 5:
-        best_score = -1
-        best_net = None
+    if keys[pygame.K_DOWN] or timeit.default_timer() - start_time > waiting_time or cars == []:
         for car,net in zip(cars,cars_brains):
             if car.puntos > best_score:
                 best_score = car.puntos
                 best_net = net
         print(best_score)
         if best_net is not None:
+            best_net.clean_values()
             cars_brains = [deepcopy(best_net) for _ in range(num_cars)]
             cars = [deepcopy(initial_car) for _ in range(num_cars)]
             for net in cars_brains[1:]:
-                net.mutate(default_mutation_prob= 0.01, default_mutation_amount= 0.01)
+                net.mutate(default_mutation_prob= 0.1, default_mutation_amount= 0.1/(best_score+1))
+        best_score = -1
+        best_net = None
         start_time = timeit.default_timer()
-
+    if keys[pygame.K_UP]:
+        waiting_time += 0.1
+        print(waiting_time)
 
 
     canvas.fill((0,0,0))
@@ -71,6 +77,9 @@ while not done:
             car.rotar(False)
         car.actualizar(map)
         if car.comprobar_colisiones(map):
+            if car.puntos > best_score:
+                best_score = car.puntos
+                best_net = net
             cars.remove(car)
             cars_brains.remove(net)
     
