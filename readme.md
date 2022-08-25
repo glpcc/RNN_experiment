@@ -33,3 +33,11 @@ If you want to review the car game code beware that it is mainly in spanish (I m
 
 ## Potential Expansions 
 Add posible mutations to the number of neurons
+
+## Observation log
+### Survival of the living fittest
+The cars would just learn to stay still after only a feww points
+### Survival of the best
+Sometimes cars learn to drive the complete circuit but almost always follows the same strategy and never learn to go faster as just one genetic line is preserved per generation
+### Reproduction based on point
+Work in progress...
