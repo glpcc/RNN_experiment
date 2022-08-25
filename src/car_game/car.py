@@ -20,6 +20,7 @@ class Coche():
     '''
 
     def __init__(self, posicion_inicial: list[int], altura: float, anchura: float, rotacion: float, potencia: float, potencia_frenada: float, potencia_rotacion: float) -> None:
+        
         self.puntos = 0
         self.numero_de_vueltas = 0
         self.posicion_x = posicion_inicial[0]
