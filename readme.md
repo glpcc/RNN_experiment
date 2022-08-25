@@ -39,5 +39,9 @@ Add posible mutations to the number of neurons
 The cars would just learn to stay still after only a feww points
 ### Survival of the best
 Sometimes cars learn to drive the complete circuit but almost always follows the same strategy and never learn to go faster as just one genetic line is preserved per generation
-### Reproduction based on point
-Work in progress...
+### Reproduction based on points
+When multiple genetic lines are let to reproduce it stucks far less often and also it increases the optimizations in time 
+### Another map with more point lines
+WIP ...
+### Change circuit in each generation
+WIP ...
