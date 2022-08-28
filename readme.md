@@ -42,6 +42,6 @@ Sometimes cars learn to drive the complete circuit but almost always follows the
 ### Reproduction based on points
 When multiple genetic lines are let to reproduce it stucks far less often and also it increases the optimizations in time 
 ### Another map with more point lines
-WIP ...
+It Does learn in other maps but drifting sometimes stucks the evolution
 ### Change circuit in each generation
-WIP ...
+Learning is achieved in both circuits which proves that it doenst learn the circuit it \*actually\* learn to drive

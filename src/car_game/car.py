@@ -69,8 +69,8 @@ class Coche():
         self.posicion_x += self.velocidad_x
         self.posicion_y += self.velocidad_y
         # Reduzco la velocidad para simular la friccion
-        self.velocidad_y *= 0.98
-        self.velocidad_x *= 0.98
+        self.velocidad_y *= 0.97
+        self.velocidad_x *= 0.97
         # Calculo los puntos de las cuatro esquinas del coche
         self.esquinas = [
             (math.sin(self.rotacion-self.angulo_esquinas)*self.distancia_al_centro + self.posicion_x, math.cos(self.rotacion-self.angulo_esquinas)*self.distancia_al_centro+self.posicion_y),
