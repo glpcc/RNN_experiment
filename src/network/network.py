@@ -40,6 +40,12 @@ class Network:
             case _:
                 print(f'The connection type given ({connection_type}) isnt allowed try with one of these \n {neuron_connections_options}')
 
+        # Erase the connections between inputs and outputs to see the result
+        input_con_matrix = np.pad(np.ones((self.num_inputs,self.num_inputs)), [(0,self.num_total_neurons - self.num_inputs),(0,self.num_total_neurons - self.num_inputs)]) # type: ignore
+        input_out_con_matrix = np.pad(np.ones((self.num_outputs,self.num_inputs)), [(self.num_total_neurons - self.num_outputs,0),(0,self.num_total_neurons - self.num_inputs)]) # type: ignore
+        out_con_matrix = np.pad(np.ones((self.num_outputs,self.num_outputs)), [(self.num_total_neurons - self.num_outputs,0),(self.num_total_neurons - self.num_outputs,0)]) # type: ignore
+        out_input_con_matrix = np.pad(np.ones((self.num_inputs,self.num_outputs)), [(0,self.num_total_neurons - self.num_inputs),(self.num_total_neurons - self.num_outputs,0)]) # type: ignore
+        self.neuron_connections = self.neuron_connections*(1-input_con_matrix+input_out_con_matrix+out_con_matrix+out_input_con_matrix)
         # Initialize the weights of the connections and the biases of the neurons
         rnd = np.random.default_rng()
         self.connections_weights = (rnd.random((self.num_total_neurons,self.num_total_neurons))-0.5)/100

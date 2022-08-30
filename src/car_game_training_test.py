@@ -50,7 +50,7 @@ clock = pygame.time.Clock()
 start_time = timeit.default_timer()
 best_score = -1
 best_net = None
-waiting_time = 5
+waiting_time = 15
 surviving_cars = 10
 save_best = False
 while not done:
