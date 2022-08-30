@@ -1,102 +1,97 @@
 import math
+from random import random
 from network.network import Network
 import pygame
-import pickle
-
-# Utils
-def draw_circles(canvas, positions, color = (0,255,0), radius = 20):
-    for pos in positions:
-        pygame.draw.circle(canvas, color, pos, radius)
+import numpy as np
 
 
-pygame.init()
-XMAX = 1500
-YMAX = 1000
-f1 = open('car_game/best_cars/car_brain_01.obj','rb')
-# net: Network = pickle.load(f1)[1]
-net: Network = Network(num_inputs= 7, num_network_neurons= 10, num_outputs= 3,connection_type='random_connections', connection_probability=1)
 
-f1.close()
-canvas = pygame.display.set_mode((XMAX,YMAX))
-done = False
-clock = pygame.time.Clock()
-# Not actual total px occupied by the network drawing
-square_px_size = 300
-neuron_diam = 10
-square_x = 50
-square_y = 50
-square_size = math.ceil(math.sqrt(net.num_network_neurons))
-print(square_size)
+class NetDrawer():
+    def __init__(self, net: Network, square_x: int, square_y: int, square_px_size: int, neuron_diam: int):
+        self.net = net
+        self.square_x = square_x
+        self.square_y = square_y
+        self.square_px_size = square_px_size
+        self.neuron_diam = neuron_diam
+        self.square_size = math.ceil(math.sqrt(net.num_network_neurons))
+        # Calculate the positions for all neurons
+        # Obtain input neurons on the left
+        self.inputs_positions = []
+        neuron_x = square_x
+        if net.num_inputs %2 == 0:
+            for i in range(net.num_inputs):
+                neuron_y = (square_px_size - (square_px_size/self.square_size))/2 - (net.num_inputs//2 - 0.5 - i)*(square_px_size/self.square_size)+ square_y
+                self.inputs_positions.append((neuron_x,neuron_y))
+        else:
+            for i in range(net.num_inputs):
+                neuron_y = (square_px_size - (square_px_size/self.square_size))/2 - ((net.num_inputs - 1)//2 - i)*(square_px_size/self.square_size)+ square_y
+                self.inputs_positions.append((neuron_x,neuron_y))
 
-# Calculate the positions for all neurons
-# Obtain input neurons on the left
-inputs_positions = []
-neuron_x = square_x
-if net.num_inputs %2 == 0:
-    for i in range(net.num_inputs):
-        neuron_y = (square_px_size - (square_px_size/square_size))/2 - (net.num_inputs//2 - 0.5 - i)*(square_px_size/square_size)+ square_y
-        inputs_positions.append((neuron_x,neuron_y))
-else:
-    for i in range(net.num_inputs):
-        neuron_y = (square_px_size - (square_px_size/square_size))/2 - ((net.num_inputs - 1)//2 - i)*(square_px_size/square_size)+ square_y
-        inputs_positions.append((neuron_x,neuron_y))
+        # Obtain output neurons on the right
+        self.output_positions = []
+        neuron_x = square_x + square_px_size + square_px_size/3
+        if net.num_outputs %2 == 0:
+            for i in range(net.num_outputs):
+                neuron_y = (square_px_size - (square_px_size/self.square_size))/2 - (net.num_outputs//2 - 0.5 - i)*(square_px_size/self.square_size) + square_y
+                self.output_positions.append((neuron_x,neuron_y))
+        else:
+            for i in range(net.num_outputs):
+                neuron_y = (square_px_size - (square_px_size/self.square_size))/2 - ((net.num_outputs - 1)//2 - i)*(square_px_size/self.square_size)+ square_y
+                self.output_positions.append((neuron_x,neuron_y))
 
-# Obtain output neurons on the right
-output_positions = []
-neuron_x = square_x + square_px_size + square_px_size/3
-if net.num_outputs %2 == 0:
-    for i in range(net.num_outputs):
-        neuron_y = (square_px_size - (square_px_size/square_size))/2 - (net.num_outputs//2 - 0.5 - i)*(square_px_size/square_size) + square_y
-        output_positions.append((neuron_x,neuron_y))
-else:
-    for i in range(net.num_outputs):
-        neuron_y = (square_px_size - (square_px_size/square_size))/2 - ((net.num_outputs - 1)//2 - i)*(square_px_size/square_size)+ square_y
-        output_positions.append((neuron_x,neuron_y))
+        # Obtain pos of inner neurons
+        self.inner_neurons_pos = []
+        for i in range(self.square_size):
+            for j in range(self.square_size):
+                if (i*self.square_size)+j < net.num_network_neurons:
+                    neuron_x = (square_px_size/self.square_size)*j + square_x + square_px_size/4
+                    neuron_y = (square_px_size/self.square_size)*i + square_y
+                    self.inner_neurons_pos.append((neuron_x,neuron_y))
 
-# Obtain pos of inner neurons
-inner_neurons_pos = []
-for i in range(square_size):
-    for j in range(square_size):
-        if (i*square_size)+j < net.num_network_neurons:
-            neuron_x = (square_px_size/square_size)*j + square_x + square_px_size/4
-            neuron_y = (square_px_size/square_size)*i + square_y
-            inner_neurons_pos.append((neuron_x,neuron_y))
+    def draw(self, canvas):
+        for i,line in enumerate(self.net.neuron_connections):
+            for j,pos in enumerate(line):
+                if pos == 1:
+                    if i < self.net.num_inputs:
+                        start_pos = self.inputs_positions[i]
+                    elif i >= self.net.num_total_neurons - self.net.num_outputs:
+                        start_pos = self.output_positions[i - (self.net.num_total_neurons - self.net.num_outputs)]
+                    else:
+                        start_pos = self.inner_neurons_pos[i - self.net.num_inputs - 1]
 
-while not done:
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
+                    if j < self.net.num_inputs:
+                        end_pos = self.inputs_positions[j]
+                    elif j >= self.net.num_total_neurons - self.net.num_outputs:
+                        end_pos = self.output_positions[j - (self.net.num_total_neurons - self.net.num_outputs)]
+                    else:
+                        end_pos = self.inner_neurons_pos[j - self.net.num_inputs - 1]
+                    if self.net.activated_neurons[i]:
+                        pygame.draw.line(canvas,(255,0,0), start_pos, end_pos)
+        # Draw all neurons
+        for i,pos in enumerate(self.output_positions):
+            neuron_val = self.net.neuron_values[self.net.num_total_neurons - self.net.num_outputs + i ]
+            if neuron_val > 0:
+                color = (0,self.neuron_value_to_255(neuron_val),0)
+            else:
+                color = (self.neuron_value_to_255(-neuron_val), 0,0)
+            pygame.draw.circle(canvas, color , pos, self.neuron_diam)
+        
+        self.draw_neurons(canvas, self.inputs_positions,[1 for i in range(self.net.num_inputs)], color = (0,255,0), activated_color=(0,0,255), radius=self.neuron_diam)
+        self.draw_neurons(canvas, self.inner_neurons_pos,self.net.activated_neurons[self.net.num_inputs:-self.net.num_outputs],color=(0,255,0), activated_color=(0,0,255), radius=self.neuron_diam)
     
-    for i,line in enumerate(net.neuron_connections):
-        for j,pos in enumerate(line):
-            if pos == 1:
-                if i < net.num_inputs:
-                    start_pos = inputs_positions[i]
-                elif i >= net.num_total_neurons - net.num_outputs:
-                    start_pos = output_positions[i - (net.num_total_neurons - net.num_outputs)]
-                else:
-                    start_pos = inner_neurons_pos[i - net.num_inputs - 1]
+    # Util
+    def draw_neurons(self, canvas, positions,activation_matrix, color = (255,0,0),activated_color = (0,255,0), radius = 20):
+        for pos,activated in zip(positions,activation_matrix):
+            if activated:
+                pygame.draw.circle(canvas, activated_color, pos, radius)
+            else:
+                pygame.draw.circle(canvas, color, pos, radius)
 
-                if j < net.num_inputs:
-                    end_pos = inputs_positions[j]
-                elif j >= net.num_total_neurons - net.num_outputs:
-                    end_pos = output_positions[j - (net.num_total_neurons - net.num_outputs)]
-                else:
-                    end_pos = inner_neurons_pos[j - net.num_inputs - 1]
-
-                pygame.draw.line(canvas,(255,0,0), start_pos, end_pos)
-    
-    
-    # Draw all neurons
-    draw_circles(canvas,  output_positions, color=(0,255,0), radius=neuron_diam)
-    draw_circles(canvas, inputs_positions, color=(0,255,0), radius=neuron_diam)
-    draw_circles(canvas, inner_neurons_pos, color=(0,255,0), radius=neuron_diam)
-
-    
-
-    keys = pygame.key.get_pressed()
-    clock.tick(60)
-    # Go ahead and update the screen with what we've drawn.
-    pygame.display.flip()
-
+    def neuron_value_to_255(self,neuron_val: int) -> int:
+        if neuron_val < 20:
+            old_range = 20
+            new_range = 255 
+            new_value = (neuron_val * new_range) / old_range
+            return int(new_value)
+        else:
+            return 255

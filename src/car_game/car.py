@@ -57,13 +57,13 @@ class Coche():
         else:
             self.rotacion += 0.1
 
-    def acelerar(self) -> None:
-        self.velocidad_y -= math.cos(self.rotacion)*self.potencia
-        self.velocidad_x -= math.sin(self.rotacion)*self.potencia
+    def acelerar(self, amount = 1) -> None:
+        self.velocidad_y -= math.cos(self.rotacion)*self.potencia*amount
+        self.velocidad_x -= math.sin(self.rotacion)*self.potencia*amount
 
-    def frenar(self) -> None:
-        self.velocidad_y *= 1 - self.potencia_frenada
-        self.velocidad_x *= 1 - self.potencia_frenada
+    def frenar(self, amount = 1) -> None:
+        self.velocidad_y *= 1 - self.potencia_frenada*amount
+        self.velocidad_x *= 1 - self.potencia_frenada*amount
 
     def actualizar(self, mapa: Mapa) -> None:
         self.posicion_x += self.velocidad_x

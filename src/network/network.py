@@ -48,7 +48,7 @@ class Network:
         self.neuron_connections = self.neuron_connections*(1-input_con_matrix+input_out_con_matrix+out_con_matrix+out_input_con_matrix)
         # Initialize the weights of the connections and the biases of the neurons
         rnd = np.random.default_rng()
-        self.connections_weights = (rnd.random((self.num_total_neurons,self.num_total_neurons))-0.5)/100
+        self.connections_weights = (rnd.random((self.num_total_neurons,self.num_total_neurons))-0.5)/10
         self.neurons_biases = np.zeros(self.num_total_neurons)
     
         # Initialize the thresholds for neuron activation

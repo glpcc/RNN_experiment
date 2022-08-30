@@ -32,11 +32,11 @@ def calcular_interseccion(x1, y1, x2, y2, x3, y3, x4, y4) -> tuple[float, float]
 
 #Calculo la distancia entre dos puntos
 def calcular_distancia(x1, y1, x2, y2) -> float:
-    return math.sqrt((x2-x1)**2 + (y2-y1)**2)
-
+    return math.dist((x1,y1),(x2,y2))
 
 #Comprueba si existe un punto de interseccion dentro de los dos segmentos
 def comprobar_interseccion(x1, y1, x2, y2, x3, y3, x4, y4):
+
     # Calculo de interseccion a partir de dos puntos en cada segmento
     denominador = ((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4))
     u = ((x1-x3)*(y1-y2)-(y1-y3)*(x1-x2))/denominador
@@ -46,42 +46,3 @@ def comprobar_interseccion(x1, y1, x2, y2, x3, y3, x4, y4):
         return True
     else:
         return False
-
-
-
-
-def multiplicacion_matrices(matriz1,matriz2):
-    matriz_resultado = []
-    if len(matriz1) == len(matriz2):
-        for i in range(len(matriz1)):
-            matriz_resultado += [matriz1[i]*matriz2[i]]
-    
-    return matriz_resultado
-
-
-def suma_matrices(matriz1,matriz2):
-    matriz_resultado = []
-    if len(matriz1) == len(matriz2):
-        for i in range(len(matriz1)):
-            matriz_resultado += [matriz1[i]+matriz2[i]]
-    
-    return matriz_resultado
-
-def suma_lista(lista):
-    resultado = 0
-    for i in lista:
-        resultado += i
-    return resultado
-    
-def menu(num_opciones: int)-> int:
-    respondido = False
-    while not respondido:
-        respuesta = input('Introduzca su eleccion> ')
-        for i in range(num_opciones+1):
-            if respuesta == str(i):
-                respuesta = i
-                respondido = True
-
-        if not respondido:
-            print('Respuesta incorrecta por favor vuelva a intentarlo:')        
-    return respuesta

@@ -5,8 +5,8 @@
         "altura": 40,
         "anchura": 15,
         "rotacion_inicial": 0,
-        "potencia_aceleracion": 0.2,
-        "potencia_frenada": 0.1,
+        "potencia_aceleracion": 0.3,
+        "potencia_frenada": 0.15,
         "potencia_rotacion": 0.1
     },
     "mapa_interior": [
