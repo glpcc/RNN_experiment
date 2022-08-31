@@ -91,7 +91,6 @@ class Coche():
                     if self.puntos % 15 == 0:
                         self.numero_de_vueltas += 1
 
-    
     def comprobar_colisiones(self, mapa: Mapa) -> bool:
         colisionado = False
         i = 0
@@ -108,8 +107,6 @@ class Coche():
             i += 1
 
         return colisionado
-
-
 
     def calcular_sensores(self, mapa: Mapa) -> list[list[float]]:
         """
