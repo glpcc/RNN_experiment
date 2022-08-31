@@ -45,7 +45,8 @@ class Network:
         input_out_con_matrix = np.pad(np.ones((self.num_outputs,self.num_inputs)), [(self.num_total_neurons - self.num_outputs,0),(0,self.num_total_neurons - self.num_inputs)]) # type: ignore
         out_con_matrix = np.pad(np.ones((self.num_outputs,self.num_outputs)), [(self.num_total_neurons - self.num_outputs,0),(self.num_total_neurons - self.num_outputs,0)]) # type: ignore
         out_input_con_matrix = np.pad(np.ones((self.num_inputs,self.num_outputs)), [(0,self.num_total_neurons - self.num_inputs),(self.num_total_neurons - self.num_outputs,0)]) # type: ignore
-        self.neuron_connections = self.neuron_connections*(1-input_con_matrix+input_out_con_matrix+out_con_matrix+out_input_con_matrix)
+        self.prevent_input_out_con_matrix = (1-input_con_matrix+input_out_con_matrix+out_con_matrix+out_input_con_matrix)
+        self.neuron_connections = self.neuron_connections*self.prevent_input_out_con_matrix
         # Initialize the weights of the connections and the biases of the neurons
         rnd = np.random.default_rng()
         self.connections_weights = (rnd.random((self.num_total_neurons,self.num_total_neurons))-0.5)/10
@@ -64,6 +65,8 @@ class Network:
         
         # Here I calculate the neuron values as stated in the readme pseudo code
         self.neuron_values = np.sum(((self.activated_neurons*(self.neuron_values+self.neurons_biases))*self.neuron_connections)*self.connections_weights,axis=1)
+        # Restore the inputs values for drawing the network
+        self.neuron_values[0:self.num_inputs] = np.array(inputs)
         # Implement some kind of activation function like tanh later if needed
         self.activated_neurons = np.where(self.neuron_values>self.neuron_thresholds,1,0)
 
@@ -125,6 +128,9 @@ class Network:
         # Delete some connections
         mutation_matrix = rng.choice([0,1], (self.num_total_neurons,self.num_total_neurons), p = [1-connection_removal_mutation_prob,connection_removal_mutation_prob]) 
         self.neuron_connections -= self.neuron_connections*mutation_matrix
+        self.neuron_connections = self.neuron_connections*self.prevent_input_out_con_matrix
+        # Ensure no input to onput or output connection
+
     def clean_values(self):
         self.neuron_values = np.zeros(self.num_total_neurons)
         self.activated_neurons = np.zeros(self.num_total_neurons)

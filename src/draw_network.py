@@ -66,19 +66,25 @@ class NetDrawer():
                     else:
                         end_pos = self.inner_neurons_pos[j - self.net.num_inputs - 1]
                     if self.net.activated_neurons[i]:
-                        pygame.draw.line(canvas,(255,0,0), start_pos, end_pos)
+                        pygame.draw.line(canvas,(179, 24, 7), start_pos, end_pos)
         # Draw all neurons
         for i,pos in enumerate(self.output_positions):
             neuron_val = self.net.neuron_values[self.net.num_total_neurons - self.net.num_outputs + i ]
             if neuron_val > 0:
-                color = (0,self.neuron_value_to_255(neuron_val),0)
+                color = (255 - self.neuron_value_to_255(neuron_val,10),255,0)
             else:
-                color = (self.neuron_value_to_255(-neuron_val), 0,0)
+                color = (255,255 - self.neuron_value_to_255(-neuron_val,10),0)
             pygame.draw.circle(canvas, color , pos, self.neuron_diam)
-        
-        self.draw_neurons(canvas, self.inputs_positions,[1 for i in range(self.net.num_inputs)], color = (0,255,0), activated_color=(0,0,255), radius=self.neuron_diam)
-        self.draw_neurons(canvas, self.inner_neurons_pos,self.net.activated_neurons[self.net.num_inputs:-self.net.num_outputs],color=(0,255,0), activated_color=(0,0,255), radius=self.neuron_diam)
-    
+
+        for i,pos in enumerate(self.inputs_positions):
+            neuron_val = self.net.neuron_values[i]
+            if neuron_val > 0:
+                color = (255 - self.neuron_value_to_255(neuron_val,500),255,255 - self.neuron_value_to_255(neuron_val,500))
+            else:
+                color = (255,255 - self.neuron_value_to_255(-neuron_val,500),255 - self.neuron_value_to_255(-neuron_val,500))
+            pygame.draw.circle(canvas, color , pos, self.neuron_diam)
+        self.draw_neurons(canvas, self.inner_neurons_pos,self.net.activated_neurons[self.net.num_inputs:-self.net.num_outputs],color=(52, 235, 225), activated_color=(0, 255, 21), radius=self.neuron_diam)
+
     # Util
     def draw_neurons(self, canvas, positions,activation_matrix, color = (255,0,0),activated_color = (0,255,0), radius = 20):
         for pos,activated in zip(positions,activation_matrix):
@@ -87,9 +93,9 @@ class NetDrawer():
             else:
                 pygame.draw.circle(canvas, color, pos, radius)
 
-    def neuron_value_to_255(self,neuron_val: int) -> int:
-        if neuron_val < 20:
-            old_range = 20
+    def neuron_value_to_255(self,neuron_val: int, threshold = 20) -> int:
+        if neuron_val < threshold:
+            old_range = threshold
             new_range = 255 
             new_value = (neuron_val * new_range) / old_range
             return int(new_value)

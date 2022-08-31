@@ -26,19 +26,23 @@ def load_map_and_car(params) -> tuple[Mapa,Coche]:
 def main():
     f1 = open("car_game/map2.json")
     f2 = open("car_game/map.json")
+    f3 = open("car_game/map3.json")
     map1_params = json.load(f1)
     map2_params = json.load(f2)
+    map3_params = json.load(f3)
     f1.close()
     f2.close()
+    f3.close()
     maps_and_cars = [
         load_map_and_car(map1_params),
-        load_map_and_car(map2_params)
+        load_map_and_car(map2_params),
+        load_map_and_car(map3_params)
     ]
     current_map_index = random.randint(0,len(maps_and_cars)-1)
     initial_car = maps_and_cars[current_map_index][1]
     map = maps_and_cars[current_map_index][0]
 
-    num_cars = 40
+    num_cars = 50
     cars_brains = [Network(num_inputs= 7, num_network_neurons= 49, num_outputs= 2,connection_type='random_connections', connection_probability=0.8, symetric_neuron_connections=False) for _ in range(num_cars)]
     cars = [deepcopy(initial_car) for _ in range(num_cars)]
 
@@ -61,7 +65,7 @@ def main():
         keys = pygame.key.get_pressed()
         if keys[pygame.K_DOWN] or frames > waiting_time*60 or cars == []:
             # Change the current map to see multimap performance (delete if not needed)
-            current_map_index = random.randint(0,len(maps_and_cars)-1)
+            current_map_index = (current_map_index + 1) % len(maps_and_cars)
             initial_car = maps_and_cars[current_map_index][1]
             map = maps_and_cars[current_map_index][0]
             # Sort cars by performance
@@ -81,6 +85,8 @@ def main():
             best_scores = [i[0].puntos for i in sorted_cars_and_brains[:surviving_cars] ]
             # Here i calculate the number of "childs" for each best car based on probabilites given by aplying softmax to the car points
             num_childs: np.ndarray = np.around((num_cars-surviving_cars)*(np.exp(best_scores)/np.sum(np.exp(best_scores)))) # type:ignore
+            print(num_childs)
+            print(best_scores)
             cars = []
             cars_brains = []
             cars += [deepcopy(initial_car) for i in range(surviving_cars)]
@@ -89,7 +95,7 @@ def main():
                 cars += [deepcopy(initial_car) for i in range(int(num))]
                 new_car_brains = [deepcopy(sorted_cars_and_brains[j][1]) for i in range(int(num))]
                 for net in new_car_brains:
-                    net.mutate(default_mutation_prob= 0.1, default_mutation_amount= 0.1/(best_scores[j]+1))
+                    net.mutate(default_mutation_prob= 0.05, default_mutation_amount= 0.1/(best_scores[j]+1))
                 cars_brains += new_car_brains
             frames = 0
         if keys[pygame.K_UP]:
@@ -103,6 +109,9 @@ def main():
         net_drawer.draw(canvas)
         for car,net in zip(cars,cars_brains):
             if car.alive:
+                if frames == 60 and car.posicion_x == initial_car.posicion_x and car.posicion_y == initial_car.posicion_y:
+                    car.alive = False
+                    continue
                 car.dibujar(canvas)
                 # car.dibujar_sensores(canvas,map)
                 inputs = np.array(car.calcular_distancia_sensores(map) + [car.velocidad_x,car.velocidad_y])
@@ -119,7 +128,7 @@ def main():
                 if car.comprobar_colisiones(map):
                     car.alive = False
         frames += 1
-        clock.tick(60)
+        # clock.tick(60)
         # Go ahead and update the screen with what we've drawn.
         pygame.display.flip()
 
